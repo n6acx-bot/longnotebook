@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily orchestrator: sweep -> build site -> write-up -> commit/push.
+"""Daily orchestrator: sweep -> write-up -> build site -> commit/push.
 
 Run once a day by longnotebook-daily.service (systemd timer). Each step is
 best-effort — a failure in one doesn't skip the others, so a broken write-up
@@ -54,8 +54,8 @@ def main() -> None:
     status = {
         "date": today,
         "sweep_ok": False,
-        "build_ok": False,
         "writeup_ok": False,
+        "build_ok": False,
         "errors": [],
     }
 
@@ -64,15 +64,18 @@ def main() -> None:
     if not ok:
         status["errors"].append(f"sweep: {err}")
 
-    ok, err = run_step([str(VENV_PYTHON), "site/build_site.py"], timeout=300)
-    status["build_ok"] = ok
-    if not ok:
-        status["errors"].append(f"build_site: {err}")
-
+    # Runs before build_site so that today's write-up (if it succeeds) is
+    # already on disk when the changelog page is generated - otherwise it
+    # only shows up starting the *next* day's build.
     ok, err = run_step([str(VENV_PYTHON), "writeups/generate_writeup.py"], timeout=180)
     status["writeup_ok"] = ok
     if not ok:
         status["errors"].append(f"writeup: {err}")
+
+    ok, err = run_step([str(VENV_PYTHON), "site/build_site.py"], timeout=300)
+    status["build_ok"] = ok
+    if not ok:
+        status["errors"].append(f"build_site: {err}")
 
     STATUS_FILE.parent.mkdir(exist_ok=True)
     with open(STATUS_FILE, "a") as f:
