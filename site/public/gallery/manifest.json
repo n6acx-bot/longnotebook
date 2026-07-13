@@ -1,0 +1,46 @@
+{
+  "date": "2026-07-12",
+  "entries": [
+    {
+      "kind": "elementary",
+      "title": "Rule 27",
+      "score": 0.995,
+      "image": "gallery/rule27.png"
+    },
+    {
+      "kind": "elementary",
+      "title": "Rule 59",
+      "score": 0.995,
+      "image": "gallery/rule59.png"
+    },
+    {
+      "kind": "elementary",
+      "title": "Rule 83",
+      "score": 0.995,
+      "image": "gallery/rule83.png"
+    },
+    {
+      "kind": "elementary",
+      "title": "Rule 115",
+      "score": 0.995,
+      "image": "gallery/rule115.png"
+    },
+    {
+      "kind": "elementary",
+      "title": "Rule 3",
+      "score": 0.995,
+      "image": "gallery/rule3.png"
+    },
+    {
+      "kind": "elementary",
+      "title": "Rule 17",
+      "score": 0.995,
+      "image": "gallery/rule17.png"
+    },
+    {
+      "kind": "life",
+      "title": "Random soup, seed 0",
+      "image": "gallery/life_soup_0.gif"
+    }
+  ]
+}

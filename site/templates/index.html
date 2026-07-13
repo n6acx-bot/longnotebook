@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}The Long Notebook — Gallery{% endblock %}
+{% block content %}
+<p>Latest run: {{ manifest.date }}</p>
+<div class="gallery">
+  {% for entry in manifest.entries %}
+  <div class="card">
+    <img src="{{ entry.image }}" alt="{{ entry.title }}">
+    <div class="meta">{{ entry.title }}{% if entry.score is defined %} — score {{ entry.score }}{% endif %}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
