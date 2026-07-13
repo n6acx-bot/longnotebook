@@ -60,14 +60,19 @@ def main() -> None:
         )
         print(f"  rule {rule}: score {entry['score']:.4f} -> {fname}")
 
-    print("Rendering one Game of Life soup...")
-    frames = game_of_life.simulate(seed=0, size=80, frames=150)
-    render_life_gif(frames, GALLERY / "life_soup_0.gif")
+    # Seed used to be hardcoded to 0, so this rendered the exact same
+    # animation every single day - not actually random despite the name.
+    # Deriving it from the date instead means a fresh soup daily, while
+    # still being reproducible if the job is re-run the same day.
+    gol_seed = int(today.replace("-", ""))
+    print(f"Rendering one Game of Life soup (seed {gol_seed})...")
+    frames = game_of_life.simulate(seed=gol_seed, size=80, frames=150)
+    render_life_gif(frames, GALLERY / "life_soup.gif")
     manifest["entries"].append(
         {
             "kind": "life",
-            "title": "Random soup, seed 0",
-            "image": "gallery/life_soup_0.gif",
+            "title": f"Random soup, seed {gol_seed}",
+            "image": "gallery/life_soup.gif",
         }
     )
 
