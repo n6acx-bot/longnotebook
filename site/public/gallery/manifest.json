@@ -1,46 +1,46 @@
 {
-  "date": "2026-07-12",
+  "date": "2026-07-13",
   "entries": [
     {
       "kind": "elementary",
-      "title": "Rule 27",
-      "score": 0.995,
-      "image": "gallery/rule27.png"
+      "title": "Rule 99",
+      "score": 0.9712,
+      "image": "gallery/rule99.png"
     },
     {
       "kind": "elementary",
-      "title": "Rule 59",
-      "score": 0.995,
-      "image": "gallery/rule59.png"
+      "title": "Rule 57",
+      "score": 0.9702,
+      "image": "gallery/rule57.png"
     },
     {
       "kind": "elementary",
-      "title": "Rule 83",
-      "score": 0.995,
-      "image": "gallery/rule83.png"
+      "title": "Rule 184",
+      "score": 0.9436,
+      "image": "gallery/rule184.png"
     },
     {
       "kind": "elementary",
-      "title": "Rule 115",
-      "score": 0.995,
-      "image": "gallery/rule115.png"
+      "title": "Rule 226",
+      "score": 0.9384,
+      "image": "gallery/rule226.png"
     },
     {
       "kind": "elementary",
-      "title": "Rule 3",
-      "score": 0.995,
-      "image": "gallery/rule3.png"
+      "title": "Rule 21",
+      "score": 0.9371,
+      "image": "gallery/rule21.png"
     },
     {
       "kind": "elementary",
-      "title": "Rule 17",
-      "score": 0.995,
-      "image": "gallery/rule17.png"
+      "title": "Rule 7",
+      "score": 0.9329,
+      "image": "gallery/rule7.png"
     },
     {
       "kind": "life",
-      "title": "Random soup, seed 0",
-      "image": "gallery/life_soup_0.gif"
+      "title": "Random soup, seed 20260713",
+      "image": "gallery/life_soup.gif"
     }
   ]
 }
