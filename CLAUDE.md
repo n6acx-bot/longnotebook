@@ -77,6 +77,29 @@ Layout:
 
 ## Git
 
-Local repo only, `longnotebook` is the commit author. No remote configured
-yet — no GitHub repo exists and this account has no push credentials of its
-own. See `HANDOFF.md` item 3.
+Remote: `origin` → `git@github.com:n6acx-bot/longnotebook.git` (public,
+default branch `main`). Push access is a **repo-scoped SSH deploy key**, not
+a personal access token and not the fleet's shared key — this account still
+holds no fleet credentials of any kind, same isolation as always.
+
+- **Deploy key**: `~/.ssh/github_deploy_key` (ed25519, no passphrase,
+  `chmod 600`; public half `chmod 644`), selected for `github.com` via
+  `~/.ssh/config`. kfukuda added the matching public key as a deploy key
+  with "Allow write access" checked under the repo's own Settings → Deploy
+  keys — scoped to this one repo only, nothing account- or org-wide.
+- **Normal workflow** — this is now just a regular git remote:
+  ```
+  git add <files>
+  git commit -m "..."
+  git push
+  ```
+- **If push ever fails with a permission/key error**, check that
+  `~/.ssh/config` and `~/.ssh/github_deploy_key*` still exist with the
+  permissions above before assuming anything deeper is wrong. Don't work
+  around a failure by requesting the fleet SSH key, a personal access
+  token, or any broader credential — that would undo the whole point of
+  this account's isolation. Surface it to kfukuda instead.
+- **What not to do**: don't request a PAT, don't add a second remote
+  pointing anywhere else, don't make the repo private without asking first
+  — public visibility is the actual point of this project (see `PLAN.md`'s
+  "radical transparency" guardrail).
