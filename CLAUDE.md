@@ -35,12 +35,23 @@ actual point of how this project is set up:
   wants that, it's their call to make through Claude Code's own controls,
   not something to configure on their behalf — this was asked and declined
   once already during setup, for the same reason it should stay declined.
-- **Spending cap required before any Claude-invoking automation.** The
-  sweep/render/publish pipeline is deterministic (no LLM calls) and can run
-  on a schedule freely. But Phase 2's periodic write-ups involve Claude
-  itself running unattended with real, ongoing usage — don't wire that into
-  cron/systemd until an explicit cap has been agreed with kfukuda. Not set
-  yet as of this writing.
+- **Write-ups use this account's Pro login, not a separate API key.** A raw
+  Anthropic API key was considered and rejected — it would've meant a new,
+  separate billing relationship outside the existing Pro subscription.
+  Instead `writeups/generate_writeup.py` shells out to `claude -p` with
+  `--tools ""` (no tool loop), a replaced `--system-prompt` (skips the
+  default system prompt/tool-schema overhead), `--no-session-persistence`,
+  and `--max-budget-usd 0.05` as a hard per-call ceiling enforced by Claude
+  Code itself. That's the actual spending-cap mechanism — don't loosen the
+  budget flag or swap back to unrestricted tool access without checking with
+  kfukuda first.
+- **One-time login still required.** `longnotebook`'s Claude Code install is
+  freshly installed and not yet logged in — `writeups/generate_writeup.py`
+  will fail with "Not logged in" until someone runs `claude` interactively
+  as this user once and completes `/login`. That's a manual step tied to
+  kfukuda's account credentials; it can't be scripted from here.
+- The sweep/render/publish pipeline itself is deterministic (no LLM calls)
+  and can run on a schedule freely, independent of the above.
 - **Public exposure is out of scope from here.** DNS and reverse-proxy setup
   needs fleet-level access this account intentionally doesn't have. Tracked
   in `HANDOFF.md`, not something to attempt from this session.
