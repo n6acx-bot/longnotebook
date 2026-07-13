@@ -45,23 +45,50 @@ actual point of how this project is set up:
   Code itself. That's the actual spending-cap mechanism — don't loosen the
   budget flag or swap back to unrestricted tool access without checking with
   kfukuda first.
-- **One-time login still required.** `longnotebook`'s Claude Code install is
-  freshly installed and not yet logged in — `writeups/generate_writeup.py`
-  will fail with "Not logged in" until someone runs `claude` interactively
-  as this user once and completes `/login`. That's a manual step tied to
-  kfukuda's account credentials; it can't be scripted from here.
+- **Login is done, automation is live (2026-07-13).** kfukuda completed the
+  one-time `/login` interactively. If `writeups/generate_writeup.py` ever
+  starts failing with "Not logged in" again (e.g. a revoked/expired
+  session), that's the same manual step, tied to kfukuda's account — it
+  can't be scripted from here, surface it rather than working around it.
 - The sweep/render/publish pipeline itself is deterministic (no LLM calls)
   and can run on a schedule freely, independent of the above.
 - **Public exposure is out of scope from here.** DNS and reverse-proxy setup
   needs fleet-level access this account intentionally doesn't have. Tracked
   in `HANDOFF.md`, not something to attempt from this session.
 
+## Automation
+
+`run_daily.py` chains sweep -> build_site -> generate_writeup -> git
+commit/push, best-effort per step (one step failing doesn't skip the
+others). Run automatically once a day by `longnotebook-daily.service` /
+`.timer` (systemd, installed by root, runs as this account, ~06:00
+America/Los_Angeles, see `systemctl list-timers longnotebook-daily.timer`).
+
+- **Status log**: every run, success or failure, appends one JSON line to
+  `status/runs.jsonl` and that file gets committed/pushed with everything
+  else — it's how the fleet's weekly homelab digest reports on this project
+  without needing any access to this account (it just reads the file
+  straight off the public GitHub repo).
+- **Failure escalation**: any step failing calls `~/bin/notify-notebook.sh`
+  with what broke, which pages kfukuda directly (see that script's own
+  header comment for how it's scoped/authenticated — short version: a
+  Pushover token that can only ever send as this project, can't be used for
+  anything else even if it leaked).
+- **Don't loosen the failure handling to "only alert once"** or similar —
+  the point of daily escalation is that kfukuda finds out the same day
+  something breaks, not the next time someone happens to check.
+
 ## Operational basics
+
+Normally you don't need to run these by hand — `run_daily.py` does all
+three every day. Useful for debugging a single step in isolation:
 
 ```
 source venv/bin/activate       # numpy, pillow, matplotlib, imageio, jinja2, markdown
 python sweep/run_sweep.py      # sweep elementary CA rules + one Game of Life render, updates site/public/gallery
 python site/build_site.py      # rebuild site/public/index.html + changelog.html
+python writeups/generate_writeup.py  # generate this week's write-up via claude -p
+python run_daily.py            # the full automated chain, same as the daily timer runs
 ```
 
 The site is served by a systemd unit (`longnotebook-site.service`, installed
