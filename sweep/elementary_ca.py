@@ -16,10 +16,21 @@ def step(row: np.ndarray, rule_bits: np.ndarray) -> np.ndarray:
     return rule_bits[idx]
 
 
-def simulate(rule: int, width: int = 201, height: int = 200, seed: int = 0) -> np.ndarray:
+def simulate(
+    rule: int, width: int = 201, height: int = 200, seed: int | None = None
+) -> np.ndarray:
+    """seed=None: classic single-cell start (the standard way to
+    characterize a rule's fundamental behavior class). seed=<int>: random
+    binary initial row instead - a legitimate, different way to probe the
+    same rule, and the mechanism the daily sweep uses to avoid finding the
+    exact same "top 6" every single day."""
     rule_bits = np.array([(rule >> i) & 1 for i in range(8)], dtype=np.uint8)
     grid = np.zeros((height, width), dtype=np.uint8)
-    grid[0, width // 2] = 1
+    if seed is None:
+        grid[0, width // 2] = 1
+    else:
+        rng = np.random.default_rng(seed)
+        grid[0] = (rng.random(width) < 0.5).astype(np.uint8)
     for r in range(1, height):
         grid[r] = step(grid[r - 1], rule_bits)
     return grid
@@ -48,10 +59,10 @@ def score(grid: np.ndarray) -> float:
     return float(row_diffs * (1.0 - period_penalty))
 
 
-def sweep(top_n: int = 6) -> list[dict]:
+def sweep(top_n: int = 6, seed: int | None = None) -> list[dict]:
     results = []
     for rule in range(256):
-        grid = simulate(rule)
+        grid = simulate(rule, seed=seed)
         s = score(grid)
         results.append({"rule": rule, "score": s, "grid": grid})
     results.sort(key=lambda r: r["score"], reverse=True)

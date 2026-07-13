@@ -42,10 +42,16 @@ def main() -> None:
     CHANGELOG.mkdir(parents=True, exist_ok=True)
 
     today = datetime.date.today().isoformat()
+    day_seed = int(today.replace("-", ""))
     manifest = {"date": today, "entries": []}
 
-    print("Sweeping 256 elementary CA rules...")
-    top = elementary_ca.sweep(top_n=6)
+    # Random initial condition, seeded from the date: the classic
+    # single-cell start always produces the same 256 scores (nothing to
+    # rediscover day over day), so the daily sweep uses a fresh random
+    # starting row instead - same 256 rules tested, different initial
+    # condition, genuinely different "top 6" possible each day.
+    print(f"Sweeping 256 elementary CA rules (seed {day_seed})...")
+    top = elementary_ca.sweep(top_n=6, seed=day_seed)
     for entry in top:
         rule = entry["rule"]
         fname = f"rule{rule}.png"
@@ -60,18 +66,13 @@ def main() -> None:
         )
         print(f"  rule {rule}: score {entry['score']:.4f} -> {fname}")
 
-    # Seed used to be hardcoded to 0, so this rendered the exact same
-    # animation every single day - not actually random despite the name.
-    # Deriving it from the date instead means a fresh soup daily, while
-    # still being reproducible if the job is re-run the same day.
-    gol_seed = int(today.replace("-", ""))
-    print(f"Rendering one Game of Life soup (seed {gol_seed})...")
-    frames = game_of_life.simulate(seed=gol_seed, size=80, frames=150)
+    print(f"Rendering one Game of Life soup (seed {day_seed})...")
+    frames = game_of_life.simulate(seed=day_seed, size=80, frames=150)
     render_life_gif(frames, GALLERY / "life_soup.gif")
     manifest["entries"].append(
         {
             "kind": "life",
-            "title": f"Random soup, seed {gol_seed}",
+            "title": f"Random soup, seed {day_seed}",
             "image": "gallery/life_soup.gif",
         }
     )
